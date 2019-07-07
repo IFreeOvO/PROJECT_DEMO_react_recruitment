@@ -8,8 +8,10 @@ const _filter = {'pwd':0, '__v': 0} // 用于不让后台返回密码和版本�
 
 Router.get('/list', function(req, res) {
   // User.remove({}, function(e,d){}) // 删除所有用户数据
-  User.find({}, function(err, doc) {
-    return res.json(doc)
+  const {type} = req.query
+
+  User.find({type}, _filter, function(err, doc) {
+    return res.json({code:0,data: doc})
   })
 })
 
@@ -23,7 +25,6 @@ Router.post('/update', function(req, res) {
   const body = req.body
   // 查询并更新
   User.findByIdAndUpdate(userid, body, function(err,doc){
-    console.log('接口', body, doc)
     const data = Object.assign({}, {
       user: doc.user,
       type: doc.type
@@ -47,7 +48,6 @@ Router.post('/login', function(req, res) {
 
 // 注册
 Router.post('/register', function(req, res) {
-  console.log('服务器',req.body)
   const {user, pwd, type } = req.body
   User.findOne({user}, function(err, doc) {
     if(doc) {
