@@ -4,18 +4,13 @@ import { connect } from 'react-redux'
 import {NavBar} from 'antd-mobile'
 import NavLinkBar from '../navlink/navlink'
 import Boss from '../../component/boss/boss'
-
-function Genius() {
-  return <h2>Genius</h2>
-}
+import Genius from '../../component/genius/genius' 
+import User from '../../component/user/user' 
 
 function Msg() {
   return <h2>Msg</h2>
 }
 
-function User() {
-  return <h2>User</h2>
-}
 
 @connect(state => state)
 class Dashboard extends React.Component {
@@ -59,7 +54,7 @@ class Dashboard extends React.Component {
     return (
       <div>
         <NavBar mode='dard' className='fixd-header'>{navList.find(v => v.path===pathname).title}</NavBar>
-        <div style={{marginTop:45}}>
+        <div style={{marginTop:45}} >
           <Switch>
             {navList.map(v=> (
               <Route path={v.path} component={v.component} key={v.path}></Route>
