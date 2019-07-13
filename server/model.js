@@ -23,7 +23,12 @@ const models = {
     'money': {type: String}
   },
   chat: {
-
+    'chatid': {type: String, require: true}, // 标记本次会话
+    'from':{type: String, require: true},
+    'to': {type: String, require: true},
+    'read': {type: Boolean, default: false}, // 消息已读未读, 指针对接受的一方
+    'content': {type: String, require: true, default: ''},
+    'create_time': {type: Number, default: new Date().getTime()}
   }
 }
 
