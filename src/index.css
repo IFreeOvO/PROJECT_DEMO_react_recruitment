@@ -40,10 +40,14 @@
 
 .stick-footer {
   z-index: 10;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
 }
 
 /* 自己加的样式,去除grid滑动警告 */
 * { touch-action: pan-y; }
+
+.overflowy {
+  overflow-y: scroll;
+}

@@ -20,7 +20,6 @@ Router.get('/list', function(req, res) {
 // 获取聊天记录列表
 Router.get('/getmsglist', function(req, res) {
   const user = req.cookies.userid
-  console.log('打印', user)
 
   User.find({}, _filter, function(e, userdoc) {
     let users = {}
@@ -29,11 +28,32 @@ Router.get('/getmsglist', function(req, res) {
     })
 
     // 查询多个条件用$or
-    Chat.find({ '$or': [{ from: user }, {to: user}] }, function(err, doc) {
+    Chat.find({ $or: [{ from: user }, { to: user }] }, function(err, doc) {
       if (!err) {
         return res.json({ code: 0, msgs: doc, users: users })
       }
     })
+  })
+})
+
+// 标记已读消息
+Router.post('/readmsg', function(req, res) {
+  const userid = req.cookies.userid
+  const { from } = req.body
+  console.log('后台收到', userid, from)
+  Chat.update(
+    { from, to: userid }, 
+    { $set: { read: true } }, 
+    { multi: true },
+    function(
+    err,
+    doc
+  ) {
+    console.log(doc)
+    if (!err) {
+      return res.json({ code: 0, num: doc.nModified})
+    }
+    return res.json({ code: 1, msg: '修改失败' })
   })
 })
 

@@ -1,15 +1,15 @@
 import React from 'react'
 import { List, InputItem, NavBar, Icon, Grid } from 'antd-mobile'
 import { connect } from 'react-redux'
-import { getMsgList, sendMsg, recvMsg } from '../../redux/chat.redux'
+import { getMsgList, sendMsg, recvMsg, readMsg } from '../../redux/chat.redux'
 import io from 'socket.io-client'
 import { getChatId } from '../../util'
 
-const socket = io('ws://localhost:8080')
+io('ws://localhost:8080')
 
 @connect(
   state => state,
-  { getMsgList, sendMsg, recvMsg }
+  { getMsgList, sendMsg, recvMsg, readMsg }
 )
 class Chat extends React.Component {
   constructor(props) {
@@ -21,13 +21,18 @@ class Chat extends React.Component {
       this.props.getMsgList()
       this.props.recvMsg()
     }
-
     // socket.on('recvmsg', data => {
     //   console.log('收到', data)
     //   this.setState({
     //     msg: [...this.state.msg, data.text]
     //   })
     // })
+  }
+
+  componentWillUnmount() {
+    // 标记已读
+    const to = this.props.match.params.user
+    this.props.readMsg(to)
   }
 
   fixCarousel() {
@@ -68,6 +73,8 @@ class Chat extends React.Component {
     return (
       <div id="chat-page">
         <NavBar
+          className="fixd-header"
+          style={{ zIndex: 10 }}
           mode="dark"
           icon={<Icon type="left" />}
           onLeftClick={() => {
@@ -77,20 +84,25 @@ class Chat extends React.Component {
           {users[userid].name}
         </NavBar>
 
-        {chatmsg.map(v => {
-          const avatar = require(`../img/${users[v.from].avatar}.png`)
-          return v.from === userid ? (
-            <List key={v._id}>
-              <Item thumb={avatar}>{v.content}</Item>
-            </List>
-          ) : (
-            <List key={v._id}>
-              <Item className="chat-me" extra={<img src={avatar} alt="头像" />}>
-                {v.content}
-              </Item>
-            </List>
-          )
-        })}
+        <div className="overflowy" style={{ marginTop: 45, paddingBottom: 45 }}>
+          {chatmsg.map(v => {
+            const avatar = require(`../img/${users[v.from].avatar}.png`)
+            return v.from === userid ? (
+              <List key={v._id}>
+                <Item thumb={avatar}>{v.content}</Item>
+              </List>
+            ) : (
+              <List key={v._id}>
+                <Item
+                  className="chat-me"
+                  extra={<img src={avatar} alt="头像" />}
+                >
+                  {v.content}
+                </Item>
+              </List>
+            )
+          })}
+        </div>
 
         <div className="stick-footer">
           <List>
@@ -104,7 +116,7 @@ class Chat extends React.Component {
                 <div>
                   <span
                     role="img"
-                    aria-label='表情'
+                    aria-label="表情"
                     style={{
                       marginRight: 15,
                       height: 30,

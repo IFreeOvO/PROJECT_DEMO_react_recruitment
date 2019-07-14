@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser')
 const model = require('./model')
 const Chat = model.getModel('chat')
 
-
 const app = express()
 
 // work with express
@@ -16,13 +15,16 @@ io.on('connection', function(socket) {
   console.log('用户已连接聊天')
 
   socket.on('sendmsg', function(data) {
-    console.log('收到消息', data)
+    // console.log('收到消息', data)
 
-    const {from, to, msg} = data
+    const { from, to, msg } = data
     const chatid = [from, to].sort().join('_')
-    Chat.create({chatid, from, to, content: msg}, function(err, doc) {
-      io.emit('recvmsg', Object.assign({}, doc._doc))
-    })
+    Chat.create(
+      { chatid, from, to, content: msg, create_time: new Date().getTime() },
+      function(err, doc) {
+        io.emit('recvmsg', Object.assign({}, doc._doc))
+      }
+    )
 
     // 发送全局事件
     // io.emit('recvmsg', data)
@@ -31,11 +33,9 @@ io.on('connection', function(socket) {
 
 const userRouter = require('./users')
 
-
 app.use(cookieParser())
 app.use(bodyParser.json())
 app.use('/user', userRouter)
-
 
 // mongo里有文档,字段的概念
 // const User = mongoose.model('user', new mongoose.Schema({
@@ -49,11 +49,9 @@ app.use('/user', userRouter)
 //   }
 // }))
 
-
 app.get('/', (req, res) => {
   res.send('<h1>欢迎后台</h1>')
 })
-
 
 server.listen(8080, () => {
   console.log('启动成功')
