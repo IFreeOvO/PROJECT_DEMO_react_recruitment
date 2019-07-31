@@ -48,6 +48,7 @@
 /* 自己加的样式,去除grid滑动警告 */
 * { touch-action: pan-y; }
 
+/* 会使ant-motion进入动画带有黑线,不影响的 */
 .overflowy {
   overflow-y: scroll;
 }
